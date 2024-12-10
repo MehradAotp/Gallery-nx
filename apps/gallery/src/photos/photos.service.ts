@@ -54,9 +54,9 @@ export class PhotosService {
     return this.mapToPhotoDto(photoWithDetails);
   }
 
-  async approvedPhoto(): Promise<PhotoDto[]> {
+  async allApprovedPhoto(): Promise<PhotoDto[]> {
     const photos = await this.photoModel.find({ status: 'approved' }).exec();
-
+    
     return photos.map(this.mapToPhotoDto);
   }
 
@@ -111,6 +111,31 @@ export class PhotosService {
   }
 
   async displayPhoto(photoId: string, user: UserForDisplay): Promise<PhotoDto> {
+    const photo = await this.photoModel.findById(photoId);
+    if (!photo) {
+      throw new NotFoundException('Photo not found');
+    }
+    const isOwnerOrAdmin =
+      user.role === 'admin' ||
+      (photo.uploadedBy._id as Types.ObjectId).equals(user._id);
+
+    if (!isOwnerOrAdmin && photo.status !== 'approved') {
+      throw new NotFoundException('Photo is not available');
+    }
+    return this.mapToPhotoDto(photo);
+  }
+  async displayPhotoForAll(photoId: string, user: UserForDisplay): Promise<PhotoDto> {
+    const photo = await this.photoModel.findById(photoId);
+    if (!photo) {
+      throw new NotFoundException('Photo not found');
+    }
+
+    if (photo.status !== 'approved') {
+      throw new NotFoundException('Photo is not available');
+    }
+    return this.mapToPhotoDto(photo);
+  }
+  async infoPhoto(photoId: string, user: UserForDisplay): Promise<PhotoDto> {
     const photo = await this.photoModel.findById(photoId);
     if (!photo) {
       throw new NotFoundException('Photo not found');

@@ -22,11 +22,11 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('photos')
-@ApiBearerAuth()
 export class PhotosController {
   constructor(private readonly photoService: PhotosService) {}
   //{Post} upload
   @Post('upload')
+  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('user')
@@ -47,11 +47,11 @@ export class PhotosController {
     const uniqueId = uuidv4();
     const newFileName = `${dateFormat}_${username}_${uniqueId}${fileExtension}`;
 
-    const uploadPath = path.join(process.cwd(), 'uploads', newFileName);
-
+    const uploadPath = path.join(process.cwd(), 'apps', 'gallery', 'uploads', newFileName);
+    console.log(uploadPath);
     // Create uploads directory if it doesn't exist
     try {
-      await fs.mkdir(path.join(process.cwd(), 'uploads'), { recursive: true });
+      await fs.mkdir(path.join(process.cwd(), 'apps', 'gallery', 'uploads'), { recursive: true });
     } catch (error) {
       console.error('Error creating directory:', error);
     }
@@ -67,19 +67,29 @@ export class PhotosController {
   }
   //{GET} my-photos
   @Get('my-photos')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('user')
   async getUserPhotos(@Request() req: any) {
     return this.photoService.getUserPhotos(req.user.id);
   }
 
+  //{GET} all photos For All
+  @Get('allPhoto')
+  async allApprovedPhotoForAll(): Promise<PhotoDto[]> {
+    return this.photoService.allApprovedPhoto();
+  }
   //{GET} all photos
-  @Get()
+  @Get('secure/allPhoto')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'user')
   async allApprovedPhoto(): Promise<PhotoDto[]> {
-    return this.photoService.approvedPhoto();
+    return this.photoService.allApprovedPhoto();
   }
   //{GET} pending
   @Get('pending')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async getPendingPhotos(): Promise<PhotoDto[]> {
@@ -87,6 +97,7 @@ export class PhotosController {
   }
   //{Post} approve with id
   @Post('approve/:id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async approvePhoto(@Param('id') photoId: string): Promise<PhotoDto> {
@@ -94,14 +105,16 @@ export class PhotosController {
   }
   //{Post} reject with id
   @Post('reject/:id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async rejectPhoto(@Param('id') photoId: string): Promise<PhotoDto> {
     return this.photoService.rejectPhoto(photoId);
   }
 
-  //{GET} view Photo
-  @Get('view/:id')
+  //{GET} view Photo secure
+  @Get('secure/view/:id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
   async viewPhoto(
@@ -124,5 +137,52 @@ export class PhotosController {
     // ارسال فایل عکس
     const filePath = path.join(process.cwd(), 'uploads', photo.filename);
     res.sendFile(filePath);
+  }
+  //{GET} view Photo For All
+  @Get('view/:id')
+  async viewPhotoForAll(
+    @Param('id') photoId: string,
+    @Request() req: any,
+    @Response() res: any
+  ): Promise<void> {
+    const photo = await this.photoService.displayPhotoForAll(photoId, req.user);
+
+    const fileExtension = path.extname(photo.filename).toLowerCase();
+    const mimeTypes = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+    };
+    const mimetype = mimeTypes[fileExtension];
+    res.setHeader('Content-Type', mimetype);
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // کش به مدت 1 روز
+    // ارسال فایل عکس
+    const filePath = path.join(process.cwd(), 'uploads', photo.filename);
+    res.sendFile(filePath);
+  }
+
+  //{GET} view Photo By Id
+  @Get('secure/info/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'user')
+  async viewPhotoInfo(
+    @Param('id') photoId: string,
+    @Request() req: any,
+  ): Promise<PhotoDto> {
+    const photo = await this.photoService.displayPhoto(photoId, req.user);
+    return photo;
+    
+  }
+  //{GET} view Photo By Id For All
+  @Get('info/:id')
+  async viewPhotoInfoForAll(
+    @Param('id') photoId: string,
+    @Request() req: any,
+  ): Promise<PhotoDto> {
+    const photo = await this.photoService.displayPhotoForAll(photoId, req.user);
+    return photo;
+    
   }
 }

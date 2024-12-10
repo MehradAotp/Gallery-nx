@@ -18,11 +18,11 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('category')
-@ApiBearerAuth()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-  //Post
+  //Post Create Category
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async CreateCategory(
@@ -30,13 +30,14 @@ export class CategoryController {
   ): Promise<CreateCategoryDto> {
     return this.categoryService.createCategory(createCategoryDto);
   }
-  //Get
+  //Get All Categories
   @Get()
   async getAllCategories(): Promise<CreateCategoryDto[]> {
     return this.categoryService.allCategory();
   }
-  //Patch
+  //Patch update Category
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async updateCategory(
@@ -45,8 +46,9 @@ export class CategoryController {
   ): Promise<UpdateCategoryDto> {
     return this.categoryService.updateCategory(id, updateCategoryDto);
   }
-  //Delete
+  //Delete delete Category
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async deleteCategory(@Param('id') id: string) {
