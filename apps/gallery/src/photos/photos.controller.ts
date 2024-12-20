@@ -135,7 +135,7 @@ export class PhotosController {
     res.setHeader('Content-Type', mimetype);
     res.setHeader('Cache-Control', 'public, max-age=86400'); // کش به مدت 1 روز
     // ارسال فایل عکس
-    const filePath = path.join(process.cwd(), 'uploads', photo.filename);
+    const filePath = path.join(process.cwd(), 'apps', 'gallery', 'uploads', photo.filename);
     res.sendFile(filePath);
   }
   //{GET} view Photo For All
@@ -158,11 +158,12 @@ export class PhotosController {
     res.setHeader('Content-Type', mimetype);
     res.setHeader('Cache-Control', 'public, max-age=86400'); // کش به مدت 1 روز
     // ارسال فایل عکس
-    const filePath = path.join(process.cwd(), 'uploads', photo.filename);
-    res.sendFile(filePath);
+    const filePath = path.join(process.cwd(), 'apps', 'gallery', 'uploads', photo.filename);
+    console.log(filePath);  // بررسی مسیر
+    res.sendFile(filePath); // ارسال فایل عکس
   }
 
-  //{GET} view Photo By Id
+  //{GET} view Photo info By Id
   @Get('secure/info/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -175,7 +176,7 @@ export class PhotosController {
     return photo;
     
   }
-  //{GET} view Photo By Id For All
+  //{GET} view Photo info By Id For All
   @Get('info/:id')
   async viewPhotoInfoForAll(
     @Param('id') photoId: string,
