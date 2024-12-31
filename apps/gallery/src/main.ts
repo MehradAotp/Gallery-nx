@@ -5,10 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import * as express from 'express';
+import mongoose from 'mongoose';
 
 config();
 
 async function bootstrap() {
+  mongoose.set('debug', true);
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
     .setTitle('Gallery API')
@@ -25,13 +27,13 @@ async function bootstrap() {
     express.static(join(process.cwd(), 'apps', 'gallery', 'uploads'), {
       index: false, // جلوگیری از جستجوی index.html
       extensions: ['jpg', 'jpeg', 'png', 'gif'], // فقط فایل‌های خاص
-    }),
+    })
   );
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-    }),
+    })
   );
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();

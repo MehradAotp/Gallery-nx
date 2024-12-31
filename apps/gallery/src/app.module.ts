@@ -15,6 +15,8 @@ import { CategoryModule } from './category/category.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { EventsService } from './events/events.service';
+import { ExcelModule } from './excel/excel.module';
+import { AirlineExcelModule } from './airline-excel/airline-excel.module';
 config();
 @Module({
   imports: [
@@ -42,6 +44,8 @@ config();
       connectionInitOptions: { wait: true },
       enableControllerDiscovery: true,
     }),
+    ExcelModule,
+    AirlineExcelModule,
   ],
   controllers: [AppController, UsersController],
   providers: [UsersService, PhotosService, EventsService],
