@@ -17,6 +17,8 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { EventsService } from './events/events.service';
 import { ExcelModule } from './excel/excel.module';
 import { AirlineExcelModule } from './airline-excel/airline-excel.module';
+import { SuppliersModule } from './suppliers/suppliers.module';
+import { TicketFlightModule } from './ticket-excel/ticket-excel.module';
 config();
 @Module({
   imports: [
@@ -46,6 +48,8 @@ config();
     }),
     ExcelModule,
     AirlineExcelModule,
+    SuppliersModule,
+    TicketFlightModule,
   ],
   controllers: [AppController, UsersController],
   providers: [UsersService, PhotosService, EventsService],
