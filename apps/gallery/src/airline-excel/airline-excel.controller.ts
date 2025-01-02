@@ -21,8 +21,6 @@ export class AirlineExcelController {
     @Body() uploadExcelDto: UploadExcelDto,
     @Request() req: any
   ): Promise<void> {
-    const transaction = await this.excelService.processExcel(
-      uploadExcelDto.file.buffer
-    );
+    await this.excelService.processExcel(uploadExcelDto.file.buffer);
   }
 }

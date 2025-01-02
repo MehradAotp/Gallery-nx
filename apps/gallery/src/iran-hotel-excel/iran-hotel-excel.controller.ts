@@ -1,15 +1,15 @@
 import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import { ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { FormDataRequest } from 'nestjs-form-data';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
-import { TicketFlightService } from './ticket-excel.service';
+import { RolesGuard } from '../auth/roles.guard';
 import { UploadExcelDto } from './dto/UploadExcel.dto';
+import { IranHotelExcelService } from './iran-hotel-excel.service';
 
-@Controller('ticketFlight')
-export class TicketFlightController {
-  constructor(private readonly excelService: TicketFlightService) {}
+@Controller('iran-hotel-excel')
+export class IranHotelExcelController {
+  constructor(private readonly excelService: IranHotelExcelService) {}
 
   @Post('upload')
   @FormDataRequest()
@@ -17,10 +17,7 @@ export class TicketFlightController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async uploadExcel(
-    @Body() uploadExcelDto: UploadExcelDto,
-    @Request() req: any
-  ): Promise<void> {
+  async uploadExcel(@Body() uploadExcelDto: UploadExcelDto): Promise<void> {
     await this.excelService.processExcel(uploadExcelDto.file.buffer);
   }
 }
