@@ -61,7 +61,7 @@ export class TicketFlight extends Document {
   flightType: string;
 
   @Prop({ required: true })
-  buyerMobile: string;
+  buyerMobile: number;
 
   @Prop({ required: true })
   purchaseAmount: number;

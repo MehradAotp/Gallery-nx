@@ -22,16 +22,8 @@ export class TicketFlightService {
 
     worksheet.eachRow((row, rowNumber): TicketFlightValidatorDto => {
       if (rowNumber === 1) return;
-
       const saleTypeValue = row.getCell(15).value;
-      let saleType = '';
-      if (saleTypeValue && (saleTypeValue as any).richText) {
-        saleType = (saleTypeValue as any).richText
-          .map((rt: any) => rt.text)
-          .join('');
-      } else {
-        saleType = saleTypeValue?.toString() || '';
-      }
+      const sType = this.extractRichTextValue(saleTypeValue);
       const transaction = {
         rowNumber: rowNumber - 1,
         purchaseSerial: row.getCell(2).value?.toString(),
@@ -53,7 +45,7 @@ export class TicketFlightService {
         ).format('YYYY-MM-DD HH:mm'),
         totalPrice: getValidatedNumber(row.getCell(13).value, 'totalPrice'),
         email: row.getCell(14).value?.toString(),
-        saleType: saleType,
+        saleType: sType,
         saleProfit: getValidatedNumber(row.getCell(16).value, 'saleProfit'),
         memberCommission: getValidatedNumber(
           row.getCell(17).value,
@@ -92,6 +84,14 @@ export class TicketFlightService {
     }
 
     return validateTransactions;
+  }
+  private extractRichTextValue(value: any): string {
+    if (value && (value as ExcelJS.CellRichTextValue).richText) {
+      return (value as ExcelJS.CellRichTextValue).richText
+        .map((rt: any) => rt.text)
+        .join('');
+    }
+    return value?.toString() || 'error';
   }
 }
 

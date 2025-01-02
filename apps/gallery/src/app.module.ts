@@ -19,6 +19,7 @@ import { ExcelModule } from './excel/excel.module';
 import { AirlineExcelModule } from './airline-excel/airline-excel.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { TicketFlightModule } from './ticket-excel/ticket-excel.module';
+import { SnappExcelModule } from './snapp-excel/snapp-excel.module';
 config();
 @Module({
   imports: [
@@ -50,6 +51,7 @@ config();
     AirlineExcelModule,
     SuppliersModule,
     TicketFlightModule,
+    SnappExcelModule,
   ],
   controllers: [AppController, UsersController],
   providers: [UsersService, PhotosService, EventsService],

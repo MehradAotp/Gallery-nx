@@ -85,9 +85,10 @@ export class TicketFlightValidatorDto {
   @IsNotEmpty()
   flightType: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  buyerMobile: string;
+  @Type(() => Number)
+  buyerMobile: number;
 
   @IsNumber()
   @IsNotEmpty()

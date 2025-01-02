@@ -5,12 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import * as express from 'express';
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 
 config();
 
 async function bootstrap() {
-  mongoose.set('debug', true);
+  // mongoose.set('debug', true);
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
     .setTitle('Gallery API')
